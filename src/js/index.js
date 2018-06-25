@@ -41,14 +41,35 @@ elements.searchForm.addEventListener('submit', e => {
 
 elements.searchResultPages.addEventListener('click', e => {
   const button = e.target.closest('.btn-inline');
-  const page = parseInt(button.dataset.goto);
-  searchView.clearResults();
-  searchView.renderResults(state.search.result, page);
+
+  if (button) {
+    const page = parseInt(button.dataset.goto);
+    searchView.clearResults();
+    searchView.renderResults(state.search.result, page);
+  }
 });
 
 /**
  * RECIPE CONTROLLER
  */
 
-const r = new Recipe(47107);
-r.getRecipe();
+async function controlRecipe() {
+  // Get id from URL
+  const id = window.location.hash.replace('#', '');
+
+  if (id) {
+    // Prepare for UI changes
+
+    // Create new recipe object
+    state.recipe = new Recipe(id);
+    // Get recipe data
+    await state.recipe.getRecipe();
+    // Calc servings and time
+    state.recipe.calcTime();
+    state.recipe.calcServings();
+    // Render recipe
+    console.log(state.recipe);
+  }
+}
+
+window.addEventListener('hashchange', controlRecipe);
